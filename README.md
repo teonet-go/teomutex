@@ -51,6 +51,8 @@ in a Go program, install the code using this command: `go get -u github.com/marc
     }
 ```
 
+You can find complete packets documentation at: <https://pkg.go.dev/github.com/teonet-go/teomutex>
+
 ## Licence
 
 [BSD](LICENSE)
