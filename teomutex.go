@@ -33,8 +33,8 @@
 	// Lock mutex
 	err = m.Lock()
 	if err != nil {
-		//Process error
-		//return
+		//  Process error
+		return
 	}
 
 	// Do somthing in this protected area

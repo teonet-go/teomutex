@@ -37,8 +37,8 @@ in a Go program, install the code using this command: `go get -u github.com/marc
     // Lock mutex
     err = m.Lock()
     if err != nil {
-        //Process error
-        //return
+        // Process error
+        return
     }
 
     // Do somthing in this protected area
