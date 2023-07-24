@@ -83,8 +83,8 @@ func TestWaitUnlock(t *testing.T) {
 	}
 	printLine()
 
-	// Unlock mutex after 1000 ms
-	time.AfterFunc(1000*time.Millisecond, func() {
+	// Unlock mutex after 1 sec
+	time.AfterFunc(1*time.Second, func() {
 		err = m.Unlock()
 		if err != nil {
 			t.Error(err)

@@ -115,7 +115,8 @@ func (m Mutex) Close() error {
 	return m.client.Close()
 }
 
-// SetLockTimeout sets lock timeout to avoid deadlock.
+// SetLockTimeout sets lock timeout to avoid deadlock. The default timeout is
+// set to 10 seconds.
 func (m *Mutex) SetLockTimeout(timeout time.Duration) {
 	m.timeout = timeout
 }
@@ -128,17 +129,19 @@ func (m *Mutex) SetLogWriter(w io.Writer) {
 // Lock mutex
 func (m Mutex) Lock() error {
 	repeatAfter := 1 * time.Millisecond
+	start := time.Now()
 	for {
 		if err := m.uploadObject(); err == nil {
 			return nil
 		} else {
 			fmt.Fprintf(m.w, "%s\n", err)
 		}
+		timeout := m.timeout - time.Since(start)
 		select {
 		case <-time.After(repeatAfter):
 			repeatAfter *= 2
 			continue
-		case <-time.After(m.timeout):
+		case <-time.After(timeout):
 			return fmt.Errorf("lock timeout")
 		}
 	}
