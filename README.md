@@ -15,7 +15,7 @@ in a Go program, install the code using this command: `go get -u github.com/marc
 
 - Create Google Cloud Storage bucket in which lock objects will be stored.
     Use next command to create backet: `gsutil mb gs:mutex`. By default
-    the teomutex uses the "mutext" backet name. To use another backet name
+    the teomutex uses the "mutex" backet name. To use another backet name
     set it in second parameter of the `teomutex.NewMutex` function.
 
 - In your application import the `github.com/teonet/teomutex` package,
