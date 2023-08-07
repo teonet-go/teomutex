@@ -127,11 +127,11 @@ func (m *Mutex) SetLogWriter(w io.Writer) {
 }
 
 // Lock mutex
-func (m Mutex) Lock() error {
+func (m Mutex) Lock(object ...string) error {
 	repeatAfter := 1 * time.Millisecond
 	start := time.Now()
 	for {
-		if err := m.uploadObject(); err == nil {
+		if err := m.uploadObject(object...); err == nil {
 			return nil
 		} else {
 			fmt.Fprintf(m.w, "%s\n", err)
@@ -147,21 +147,27 @@ func (m Mutex) Lock() error {
 	}
 }
 
-// Unock mutex
-func (m Mutex) Unlock() error {
-	return m.deleteObject()
+// Unlock mutex
+func (m Mutex) Unlock(object ...string) error {
+	return m.deleteObject(object...)
 }
 
 // uploadObject uploads mutex object.
-func (m Mutex) uploadObject() error {
+func (m Mutex) uploadObject(obj ...string) error {
+
+	// Define object
+	object := m.object
+	if len(obj) > 0 {
+		object = obj[0]
+	}
 
 	// Print start message
-	fmt.Fprintf(m.w, "Uploading object %s started...\n", m.object)
+	fmt.Fprintf(m.w, "Uploading object %s started...\n", object)
 
 	// Create bytes reader to upload
 	r := bytes.NewReader([]byte("locked"))
 
-	o := m.client.Bucket(m.bucket).Object(m.object)
+	o := m.client.Bucket(m.bucket).Object(object)
 
 	// Optional: set a generation-match precondition to avoid potential race
 	// conditions and data corruptions. The request to upload is aborted if the
@@ -189,20 +195,26 @@ func (m Mutex) uploadObject() error {
 	}
 
 	// Print success result message
-	fmt.Fprintf(m.w, "Blob %s uploaded.\n", m.object)
+	fmt.Fprintf(m.w, "Blob %s uploaded.\n", object)
 	return nil
 }
 
 // deleteObject deletess mutex object.
-func (m Mutex) deleteObject() error {
+func (m Mutex) deleteObject(obj ...string) error {
+
+	// Define object
+	object := m.object
+	if len(obj) > 0 {
+		object = obj[0]
+	}
 
 	// Print start message
-	fmt.Fprintf(m.w, "Deleting object %s started...\n", m.object)
+	fmt.Fprintf(m.w, "Deleting object %s started...\n", object)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	o := m.client.Bucket(m.bucket).Object(m.object)
+	o := m.client.Bucket(m.bucket).Object(object)
 
 	// Optional: set a generation-match precondition to avoid potential race
 	// conditions and data corruptions. The request to delete the file is aborted
@@ -214,10 +226,10 @@ func (m Mutex) deleteObject() error {
 	o = o.If(storage.Conditions{GenerationMatch: attrs.Generation})
 
 	if err := o.Delete(ctx); err != nil {
-		return fmt.Errorf("object(%q).Delete: %w", m.object, err)
+		return fmt.Errorf("object(%q).Delete: %w", object, err)
 	}
 
 	// Print success result message
-	fmt.Fprintf(m.w, "Blob %s deleted.\n", m.object)
+	fmt.Fprintf(m.w, "Blob %s deleted.\n", object)
 	return nil
 }
