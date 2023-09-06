@@ -9,7 +9,7 @@ It can be used to serialize computations anywhere on the global internet.
 ## How to install it
 
 The reference implementation in this repo is written in Go. To use teomutex
-in a Go program, install the code using this command: `go get -u github.com/marcacohen/teomutex`.
+in a Go program, install the code using this command: `go get -u github.com/teonet-go/teomutex`.
 
 ## How to use it
 
